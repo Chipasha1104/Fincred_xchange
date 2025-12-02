@@ -78,11 +78,6 @@ export default function AdminLogin() {
               Access Dashboard <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
             
-            <div className="text-center pt-4">
-               <p className="text-xs text-muted-foreground">
-                 Demo: <span className="font-mono text-primary cursor-pointer hover:underline" onClick={() => {setEmail('admin@fincred.com'); setPassword('fincred2025')}}>admin@fincred.com</span> / fincred2025
-               </p>
-            </div>
           </form>
         </CardContent>
       </Card>
