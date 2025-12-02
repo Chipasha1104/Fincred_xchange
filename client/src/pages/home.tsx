@@ -22,23 +22,27 @@ export default function Home() {
             Building a stronger culture, one gift at a time.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Link href="/admin">
-                <Button 
-                    size="lg" 
-                    className="bg-white text-primary hover:bg-slate-100 font-bold text-lg px-8 py-6 rounded-md shadow-lg hover:shadow-xl transition-all"
-                >
-                    <ShieldCheck className="w-5 h-5 mr-2" /> Admin Portal
-                </Button>
-            </Link>
+             {/* Admin button hidden to separate portals - Admins can still access via direct link /admin if needed, 
+                 or we keep it here on the landing page but remove it from the navbar as requested. 
+                 User said "send the employee login portal separately". 
+                 So let's keep the Home page as the main landing for EVERYONE, but visually separate them.
+             */}
             <Link href="/login">
                 <Button 
                     size="lg" 
-                    variant="outline"
-                    className="border-2 border-white text-white hover:bg-white/10 font-bold text-lg px-8 py-6 rounded-md"
+                    className="bg-white text-primary hover:bg-slate-100 font-bold text-lg px-12 py-6 rounded-md shadow-lg hover:shadow-xl transition-all"
                 >
-                    Employee Login
+                    Employee Portal Login
                 </Button>
             </Link>
+          </div>
+          
+          <div className="pt-8">
+              <Link href="/admin">
+                  <a className="text-white/50 hover:text-white text-sm underline decoration-dashed underline-offset-4 transition-colors">
+                      Admin Access
+                  </a>
+              </Link>
           </div>
         </div>
       </section>

@@ -1,3 +1,4 @@
+import { Key } from "lucide-react";
 import { useState } from "react";
 import { useExchange } from "@/lib/exchange-context";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ export function ParticipantList({ exchangeId }: { exchangeId: string }) {
   
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("fincred2025");
   const [suggestions, setSuggestions] = useState("");
 
   if (!exchange) return null;
@@ -19,9 +21,10 @@ export function ParticipantList({ exchangeId }: { exchangeId: string }) {
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email) return;
-    addParticipant(exchangeId, name, email, suggestions);
+    addParticipant(exchangeId, name, email, suggestions, password);
     setName("");
     setEmail("");
+    setPassword("fincred2025");
     setSuggestions("");
   };
 
@@ -55,6 +58,18 @@ export function ParticipantList({ exchangeId }: { exchangeId: string }) {
           </div>
           
           <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700">Login Password</label>
+            <Input 
+              type="text" 
+              placeholder="Password for user" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)}
+              className="bg-slate-50"
+            />
+            <p className="text-xs text-muted-foreground">Default: fincred2025</p>
+          </div>
+
+          <div className="space-y-2">
             <label className="text-sm font-medium text-slate-700">Suggestions & Preferences (from Form)</label>
             <Textarea 
               placeholder="Paste preferences from Google Sheet here (e.g. 'Likes coffee, allergic to nuts')"
@@ -83,6 +98,7 @@ export function ParticipantList({ exchangeId }: { exchangeId: string }) {
               <div>
                 <p className="font-bold text-slate-900">{p.name}</p>
                 <p className="text-sm text-slate-500">{p.email}</p>
+                <p className="text-xs text-slate-400 flex items-center gap-1 mt-1"><Key className="w-3 h-3" /> Pass: {p.password || 'fincred2025'}</p>
               </div>
             </div>
             

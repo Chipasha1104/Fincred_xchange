@@ -22,14 +22,7 @@ export function Layout({ children }: { children: ReactNode }) {
                 <HelpCircle className="w-4 h-4" /> Help Guide
               </a>
             </Link>
-            <Link href="/admin">
-              <a className={`text-sm font-medium transition-colors flex items-center gap-1 ${location === '/admin' ? 'text-primary font-bold' : 'text-muted-foreground hover:text-primary'}`}>
-                <ShieldCheck className="w-4 h-4" /> Admin Dashboard
-              </a>
-            </Link>
-            <button className="bg-primary text-primary-foreground px-5 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md">
-              Portal Login
-            </button>
+            {/* Admin link removed from general view - Admin should know to go to /admin or access via Home button */}
           </nav>
         </div>
       </header>
