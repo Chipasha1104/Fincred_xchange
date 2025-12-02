@@ -1,17 +1,23 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useExchange } from "@/lib/exchange-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Calendar, DollarSign, ArrowRight, Plus, Gift, Users, BarChart3, Trash2, RefreshCw } from "lucide-react";
+import { Calendar, DollarSign, ArrowRight, Plus, Gift, Users, BarChart3, Trash2, RefreshCw, LogOut } from "lucide-react";
 import { useState } from "react";
 
 export default function AdminDashboard() {
+  const [, setLocation] = useLocation();
   const { exchanges, createExchange, resetDraw } = useExchange();
   
   // Form State
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [budget, setBudget] = useState("");
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminSession');
+    setLocation('/admin-login');
+  };
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,9 +39,14 @@ export default function AdminDashboard() {
             <h1 className="text-3xl font-display font-bold text-slate-900">Admin Dashboard</h1>
             <p className="text-slate-500">Manage Fincred gift exchanges and participants</p>
         </div>
-        <Button variant="outline" className="gap-2">
-            <BarChart3 className="w-4 h-4" /> Download Reports
-        </Button>
+        <div className="flex gap-2">
+            <Button variant="outline" className="gap-2">
+                <BarChart3 className="w-4 h-4" /> Download Reports
+            </Button>
+            <Button variant="outline" onClick={handleLogout} className="text-muted-foreground hover:text-destructive">
+                <LogOut className="w-4 h-4 mr-2" /> Sign Out
+            </Button>
+        </div>
       </div>
 
       {/* Stats Row */}
