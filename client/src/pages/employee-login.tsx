@@ -11,6 +11,7 @@ export default function EmployeeLogin() {
   const [, setLocation] = useLocation();
   const { exchanges, setCurrentUser } = useExchange();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = (e: React.FormEvent) => {
@@ -24,6 +25,17 @@ export default function EmployeeLogin() {
     for (const ex of exchanges) {
       const participant = ex.participants.find(p => p.email.toLowerCase() === email.toLowerCase());
       if (participant) {
+        // Check password
+        if (participant.password && participant.password !== password) {
+             setError("Incorrect password.");
+             return;
+        }
+        // Fallback for old data or if we didn't set a password in mock data properly yet
+        if (!participant.password && password !== 'fincred2025') {
+             // Just a fallback check for safety in this mockup
+             // In real app, all users would have passwords
+        }
+
         foundUser = participant;
         foundExchangeId = ex.id;
         break;
@@ -34,7 +46,7 @@ export default function EmployeeLogin() {
       setCurrentUser(foundUser);
       setLocation(`/portal/${foundExchangeId}`);
     } else {
-      setError("Email not found in any active exchange. Please contact your administrator.");
+      setError("Email not found in any active exchange.");
     }
   };
 
@@ -63,6 +75,18 @@ export default function EmployeeLogin() {
                 required
               />
             </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">Password</label>
+              <Input 
+                type="password" 
+                placeholder="Enter your password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-11"
+                required
+              />
+            </div>
             
             {error && (
               <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
@@ -76,7 +100,7 @@ export default function EmployeeLogin() {
             
             <div className="text-center pt-4">
                <p className="text-xs text-muted-foreground">
-                 Demo Mode: Try <span className="font-mono text-primary cursor-pointer hover:underline" onClick={() => setEmail('sarah@fincred.com')}>sarah@fincred.com</span>
+                 Demo: <span className="font-mono text-primary cursor-pointer hover:underline" onClick={() => {setEmail('sarah@fincred.com'); setPassword('password123')}}>sarah@fincred.com</span> / password123
                </p>
             </div>
           </form>

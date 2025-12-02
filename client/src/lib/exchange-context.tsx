@@ -8,6 +8,7 @@ export type Participant = {
   id: string;
   name: string;
   email: string;
+  password?: string; // Added password field
   suggestions: string; // New field for "suggestions and preferences"
   avatar?: string;
   wishlist: string[];
@@ -27,7 +28,7 @@ interface ExchangeContextType {
   exchanges: Exchange[];
   createExchange: (title: string, date: string, budget: string) => void;
   getExchange: (id: string) => Exchange | undefined;
-  addParticipant: (exchangeId: string, name: string, email: string, suggestions?: string) => void;
+  addParticipant: (exchangeId: string, name: string, email: string, suggestions?: string, password?: string) => void;
   removeParticipant: (exchangeId: string, participantId: string) => void;
   drawNames: (exchangeId: string) => void;
   resetDraw: (exchangeId: string) => void;
@@ -51,6 +52,7 @@ const MOCK_EXCHANGES: Exchange[] = [
         id: 'p1', 
         name: 'Sarah Jenkins', 
         email: 'sarah@fincred.com', 
+        password: 'password123',
         suggestions: 'Loves aromatic candles and dark chocolate. Dislikes strong perfumes.',
         wishlist: ['Scented candles', 'Coffee mug'], 
         assignedToId: null 
@@ -93,7 +95,7 @@ export function ExchangeProvider({ children }: { children: ReactNode }) {
 
   const getExchange = (id: string) => exchanges.find(e => e.id === id);
 
-  const addParticipant = (exchangeId: string, name: string, email: string, suggestions: string = "") => {
+  const addParticipant = (exchangeId: string, name: string, email: string, suggestions: string = "", password: string = "fincred2025") => {
     setExchanges(prev => prev.map(ex => {
       if (ex.id !== exchangeId) return ex;
       return {
@@ -102,6 +104,7 @@ export function ExchangeProvider({ children }: { children: ReactNode }) {
           id: generateId(), 
           name, 
           email, 
+          password,
           suggestions,
           wishlist: [],
           assignedToId: null 
