@@ -30,13 +30,15 @@ export default function Home() {
                     <ShieldCheck className="w-5 h-5 mr-2" /> Admin Portal
                 </Button>
             </Link>
-            <Button 
-                size="lg" 
-                variant="outline"
-                className="border-2 border-white text-white hover:bg-white/10 font-bold text-lg px-8 py-6 rounded-md"
-            >
-                Employee Login
-            </Button>
+            <Link href="/login">
+                <Button 
+                    size="lg" 
+                    variant="outline"
+                    className="border-2 border-white text-white hover:bg-white/10 font-bold text-lg px-8 py-6 rounded-md"
+                >
+                    Employee Login
+                </Button>
+            </Link>
           </div>
         </div>
       </section>
