@@ -61,7 +61,7 @@ export default function ExchangeDetail() {
                 <span>{exchange.date}</span>
               </div>
               <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4" />
+                <span className="font-bold">K</span>
                 <span>Budget: {exchange.budget}</span>
               </div>
             </div>

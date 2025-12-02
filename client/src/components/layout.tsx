@@ -12,9 +12,6 @@ export function Layout({ children }: { children: ReactNode }) {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/">
             <a className="flex items-center gap-3 group">
-              <div className="relative w-8 h-8 transition-transform group-hover:scale-110 duration-300">
-                 <img src={iconImage} alt="Logo" className="w-full h-full object-contain" />
-              </div>
               <span className="font-display text-xl text-primary font-bold tracking-tight">FINCRED</span>
             </a>
           </Link>
