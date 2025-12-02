@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ParticipantList } from "@/components/participant-list";
-import { Calendar, DollarSign, Shuffle, ArrowLeft, Gift, CheckCircle2, Plus, FileText, Info } from "lucide-react";
+import { Calendar, DollarSign, Shuffle, ArrowLeft, Gift, CheckCircle2, Plus, FileText, Info, Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import confetti from "canvas-confetti";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ExchangeDetail() {
   const { id } = useParams();
+  const { toast } = useToast();
   const { getExchange, drawNames, currentUser, setCurrentUser, addToWishlist } = useExchange();
   const exchange = getExchange(id || "");
   const [activeTab, setActiveTab] = useState("participants");
@@ -76,9 +78,25 @@ export default function ExchangeDetail() {
               <Shuffle className="w-5 h-5 mr-2" /> Randomize & Assign
             </Button>
           ) : (
-             <div className="bg-green-50 rounded-lg p-4 border border-green-100 text-center min-w-[200px]">
-                <p className="text-sm font-bold text-green-800">Assignments Complete</p>
-                <p className="text-xs text-green-600 mt-1">Notifications Pending</p>
+             <div className="flex flex-col gap-2 items-end">
+                <div className="bg-green-50 rounded-lg p-2 px-4 border border-green-100 text-center">
+                    <p className="text-sm font-bold text-green-800 flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4" /> Assignments Complete
+                    </p>
+                </div>
+                <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                        toast({
+                            title: "Emails Sent",
+                            description: `Notifications sent to ${exchange.participants.length} participants.`,
+                        })
+                    }}
+                    className="text-primary border-primary/20 hover:bg-primary/5"
+                >
+                    <Mail className="w-4 h-4 mr-2" /> Send Notifications
+                </Button>
              </div>
           )}
         </div>
