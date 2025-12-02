@@ -98,11 +98,6 @@ export default function EmployeeLogin() {
               Access Portal <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
             
-            <div className="text-center pt-4">
-               <p className="text-xs text-muted-foreground">
-                 Demo: <span className="font-mono text-primary cursor-pointer hover:underline" onClick={() => {setEmail('sarah@fincred.com'); setPassword('password123')}}>sarah@fincred.com</span> / password123
-               </p>
-            </div>
           </form>
         </CardContent>
       </Card>
