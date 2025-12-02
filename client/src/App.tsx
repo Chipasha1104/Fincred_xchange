@@ -8,6 +8,7 @@ import { Layout } from "@/components/layout";
 import Home from "@/pages/home";
 import AdminDashboard from "@/pages/admin";
 import ExchangeDetail from "@/pages/exchange-detail";
+import GuidePage from "@/pages/guide";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -16,6 +17,7 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/admin" component={AdminDashboard} />
+        <Route path="/guide" component={GuidePage} />
         <Route path="/exchange/:id" component={ExchangeDetail} />
         <Route component={NotFound} />
       </Switch>

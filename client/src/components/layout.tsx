@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import iconImage from "@assets/generated_images/fincred_finance_logo_icon.png";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, HelpCircle } from "lucide-react";
 
 export function Layout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
@@ -17,6 +17,11 @@ export function Layout({ children }: { children: ReactNode }) {
           </Link>
           
           <nav className="flex gap-4 items-center">
+            <Link href="/guide">
+              <a className={`text-sm font-medium transition-colors flex items-center gap-1 ${location === '/guide' ? 'text-primary font-bold' : 'text-muted-foreground hover:text-primary'}`}>
+                <HelpCircle className="w-4 h-4" /> Help Guide
+              </a>
+            </Link>
             <Link href="/admin">
               <a className={`text-sm font-medium transition-colors flex items-center gap-1 ${location === '/admin' ? 'text-primary font-bold' : 'text-muted-foreground hover:text-primary'}`}>
                 <ShieldCheck className="w-4 h-4" /> Admin Dashboard
