@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { nanoid } from 'nanoid'; // We don't have nanoid, I'll write a simple utility
 import canvasConfetti from 'canvas-confetti';
 
 // Simple ID generator since we might not have uuid/nanoid
@@ -9,6 +8,7 @@ export type Participant = {
   id: string;
   name: string;
   email: string;
+  suggestions: string; // New field for "suggestions and preferences"
   avatar?: string;
   wishlist: string[];
   assignedToId?: string | null; // The ID of the person they are giving a gift TO
@@ -27,9 +27,10 @@ interface ExchangeContextType {
   exchanges: Exchange[];
   createExchange: (title: string, date: string, budget: string) => void;
   getExchange: (id: string) => Exchange | undefined;
-  addParticipant: (exchangeId: string, name: string, email: string) => void;
+  addParticipant: (exchangeId: string, name: string, email: string, suggestions?: string) => void;
   removeParticipant: (exchangeId: string, participantId: string) => void;
   drawNames: (exchangeId: string) => void;
+  resetDraw: (exchangeId: string) => void;
   addToWishlist: (exchangeId: string, participantId: string, item: string) => void;
   currentUser: Participant | null; // Mocking a "logged in" user for the view
   setCurrentUser: (participant: Participant | null) => void;
@@ -41,14 +42,35 @@ const ExchangeContext = createContext<ExchangeContextType | undefined>(undefined
 const MOCK_EXCHANGES: Exchange[] = [
   {
     id: 'demo-1',
-    title: 'Office Holiday Party 2025',
+    title: 'Fincred Holiday Exchange 2025',
     date: '2025-12-20',
     budget: '$50',
     status: 'draft',
     participants: [
-      { id: 'p1', name: 'Sarah Jenkins', email: 'sarah@example.com', wishlist: ['Scented candles', 'Coffee mug'], assignedToId: null },
-      { id: 'p2', name: 'Mike Ross', email: 'mike@example.com', wishlist: ['Tech gadgets', 'Socks'], assignedToId: null },
-      { id: 'p3', name: 'Jessica Pearson', email: 'jessica@example.com', wishlist: ['Luxury tea', 'Notebook'], assignedToId: null },
+      { 
+        id: 'p1', 
+        name: 'Sarah Jenkins', 
+        email: 'sarah@fincred.com', 
+        suggestions: 'Loves aromatic candles and dark chocolate. Dislikes strong perfumes.',
+        wishlist: ['Scented candles', 'Coffee mug'], 
+        assignedToId: null 
+      },
+      { 
+        id: 'p2', 
+        name: 'Mike Ross', 
+        email: 'mike@fincred.com', 
+        suggestions: 'Huge tech nerd. Always needs cables or desk organizers. No food items.',
+        wishlist: ['Tech gadgets', 'Socks'], 
+        assignedToId: null 
+      },
+      { 
+        id: 'p3', 
+        name: 'Jessica Pearson', 
+        email: 'jessica@fincred.com', 
+        suggestions: 'Appreciates high quality tea and stationery. Elegant style.',
+        wishlist: ['Luxury tea', 'Notebook'], 
+        assignedToId: null 
+      },
     ]
   }
 ];
@@ -71,7 +93,7 @@ export function ExchangeProvider({ children }: { children: ReactNode }) {
 
   const getExchange = (id: string) => exchanges.find(e => e.id === id);
 
-  const addParticipant = (exchangeId: string, name: string, email: string) => {
+  const addParticipant = (exchangeId: string, name: string, email: string, suggestions: string = "") => {
     setExchanges(prev => prev.map(ex => {
       if (ex.id !== exchangeId) return ex;
       return {
@@ -80,6 +102,7 @@ export function ExchangeProvider({ children }: { children: ReactNode }) {
           id: generateId(), 
           name, 
           email, 
+          suggestions,
           wishlist: [],
           assignedToId: null 
         }]
@@ -97,6 +120,17 @@ export function ExchangeProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  const resetDraw = (exchangeId: string) => {
+     setExchanges(prev => prev.map(ex => {
+      if (ex.id !== exchangeId) return ex;
+      return {
+        ...ex,
+        status: 'draft',
+        participants: ex.participants.map(p => ({...p, assignedToId: null}))
+      };
+    }));
+  }
+
   const drawNames = (exchangeId: string) => {
     setExchanges(prev => prev.map(ex => {
       if (ex.id !== exchangeId) return ex;
@@ -110,7 +144,8 @@ export function ExchangeProvider({ children }: { children: ReactNode }) {
       
       // Keep shuffling until no one has themselves
       // (In a real app, use a better graph algorithm, but this works for small N)
-      while (!valid) {
+      let attempts = 0;
+      while (!valid && attempts < 100) {
         for (let i = shuffled.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -123,6 +158,13 @@ export function ExchangeProvider({ children }: { children: ReactNode }) {
             break;
           }
         }
+        attempts++;
+      }
+
+      if (!valid) {
+          console.error("Could not find valid match in 100 attempts");
+          // Fallback: Shift by 1 (guaranteed no self-match)
+          shuffled = [...participants.slice(1), participants[0]];
       }
 
       const newParticipants = participants.map((p, i) => ({
@@ -135,7 +177,7 @@ export function ExchangeProvider({ children }: { children: ReactNode }) {
         particleCount: 150,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#d42426', '#1a472a', '#f4d03f']
+        colors: ['#1e3a8a', '#3b82f6', '#93c5fd'] // Blue confetti
       });
 
       return {
@@ -167,6 +209,7 @@ export function ExchangeProvider({ children }: { children: ReactNode }) {
       addParticipant, 
       removeParticipant, 
       drawNames, 
+      resetDraw,
       addToWishlist,
       currentUser,
       setCurrentUser
