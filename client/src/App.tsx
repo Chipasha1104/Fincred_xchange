@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ExchangeProvider } from "@/lib/exchange-context";
 import { Layout } from "@/components/layout";
 import Home from "@/pages/home";
+import AdminDashboard from "@/pages/admin";
 import ExchangeDetail from "@/pages/exchange-detail";
 import NotFound from "@/pages/not-found";
 
@@ -14,6 +15,7 @@ function Router() {
     <Layout>
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/admin" component={AdminDashboard} />
         <Route path="/exchange/:id" component={ExchangeDetail} />
         <Route component={NotFound} />
       </Switch>
