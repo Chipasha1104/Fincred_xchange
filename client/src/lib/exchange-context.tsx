@@ -44,7 +44,7 @@ const MOCK_EXCHANGES: Exchange[] = [
     id: 'demo-1',
     title: 'Fincred Holiday Exchange 2025',
     date: '2025-12-20',
-    budget: '$50',
+    budget: 'K300',
     status: 'draft',
     participants: [
       { 
