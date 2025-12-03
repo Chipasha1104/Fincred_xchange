@@ -149,6 +149,10 @@ export function ExchangeProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ item })
       });
       if (response.ok) {
+        const updatedParticipant = await response.json();
+        if (currentUser && currentUser.id === participantId) {
+          setCurrentUser({ ...currentUser, wishlist: updatedParticipant.wishlist });
+        }
         await refreshExchanges();
       }
     } catch (error) {
