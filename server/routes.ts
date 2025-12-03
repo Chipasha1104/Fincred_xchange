@@ -81,7 +81,8 @@ export async function registerRoutes(
       }
       
       const participant = await storage.addParticipant(parsed.data);
-      res.status(201).json(participant);
+      const { password: _, ...safeParticipant } = participant;
+      res.status(201).json(safeParticipant);
     } catch (error) {
       res.status(500).json({ error: "Failed to add participant" });
     }
@@ -197,8 +198,9 @@ export async function registerRoutes(
         return res.status(401).json({ error: "Incorrect password" });
       }
 
+      const { password: _, ...safeParticipant } = participant;
       res.json({ 
-        participant, 
+        participant: safeParticipant, 
         exchangeId,
         message: "Login successful" 
       });

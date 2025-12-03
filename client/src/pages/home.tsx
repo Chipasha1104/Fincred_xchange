@@ -1,9 +1,11 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import heroImage from "@assets/generated_images/corporate_blue_and_white_abstract_hero.png";
 import { ShieldCheck, ArrowRight } from "lucide-react";
 
 export default function Home() {
+  const [, setLocation] = useLocation();
+  
   return (
     <div className="pb-20">
       {/* Hero Section */}
@@ -22,23 +24,18 @@ export default function Home() {
             Building a stronger culture, one gift at a time.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-             {/* Admin button hidden to separate portals - Admins can still access via direct link /admin if needed, 
-                 or we keep it here on the landing page but remove it from the navbar as requested. 
-                 User said "send the employee login portal separately". 
-                 So let's keep the Home page as the main landing for EVERYONE, but visually separate them.
-             */}
-            <Link href="/login">
-                <Button 
-                    size="lg" 
-                    className="bg-white text-primary hover:bg-slate-100 font-bold text-lg px-12 py-6 rounded-md shadow-lg hover:shadow-xl transition-all"
-                >
-                    Employee Portal Login
-                </Button>
-            </Link>
+            <Button 
+                size="lg" 
+                className="bg-white text-primary hover:bg-slate-100 font-bold text-lg px-12 py-6 rounded-md shadow-lg hover:shadow-xl transition-all"
+                onClick={() => setLocation('/login')}
+                data-testid="button-employee-login"
+            >
+                Employee Portal Login
+            </Button>
           </div>
           
           <div className="pt-8">
-              <Link href="/admin-login" className="text-white/50 hover:text-white text-sm underline decoration-dashed underline-offset-4 transition-colors">
+              <Link href="/admin-login" className="text-white/50 hover:text-white text-sm underline decoration-dashed underline-offset-4 transition-colors" data-testid="link-admin-login">
                   Admin Access
               </Link>
           </div>
