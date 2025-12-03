@@ -3,16 +3,33 @@ import { pgTable, text, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
+export const exchanges = pgTable("exchanges", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  title: text("title").notNull(),
+  date: text("date").notNull(),
+  budget: text("budget").notNull(),
+  status: text("status").notNull().default("draft"),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const participants = pgTable("participants", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  exchangeId: varchar("exchange_id").notNull().references(() => exchanges.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  password: text("password").notNull().default("fincred2025"),
+  suggestions: text("suggestions").default(""),
+  wishlist: text("wishlist").array().default([]),
+  assignedToId: varchar("assigned_to_id"),
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export const insertExchangeSchema = createInsertSchema(exchanges).omit({ id: true });
+export const insertParticipantSchema = createInsertSchema(participants).omit({ id: true });
+
+export type InsertExchange = z.infer<typeof insertExchangeSchema>;
+export type Exchange = typeof exchanges.$inferSelect;
+export type InsertParticipant = z.infer<typeof insertParticipantSchema>;
+export type Participant = typeof participants.$inferSelect;
+
+export type ExchangeWithParticipants = Exchange & {
+  participants: Participant[];
+};
