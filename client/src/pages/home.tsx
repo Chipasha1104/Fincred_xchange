@@ -38,10 +38,8 @@ export default function Home() {
           </div>
           
           <div className="pt-8">
-              <Link href="/admin-login">
-                  <a className="text-white/50 hover:text-white text-sm underline decoration-dashed underline-offset-4 transition-colors">
-                      Admin Access
-                  </a>
+              <Link href="/admin-login" className="text-white/50 hover:text-white text-sm underline decoration-dashed underline-offset-4 transition-colors">
+                  Admin Access
               </Link>
           </div>
         </div>

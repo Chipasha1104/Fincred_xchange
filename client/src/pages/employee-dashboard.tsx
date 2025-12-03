@@ -93,7 +93,7 @@ export default function EmployeeDashboard() {
                                     </div>
                                 </div>
 
-                                {myMatch.wishlist.length > 0 && (
+                                {(myMatch.wishlist && myMatch.wishlist.length > 0) && (
                                     <div className="bg-white/5 rounded-xl p-6 border border-white/5">
                                         <h4 className="font-bold text-sm mb-3 text-blue-200">Their Wishlist</h4>
                                         <div className="flex flex-wrap gap-2">
@@ -162,7 +162,7 @@ export default function EmployeeDashboard() {
                         </form>
                         
                         <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
-                            {currentUser.wishlist.length === 0 ? (
+                            {(!currentUser.wishlist || currentUser.wishlist.length === 0) ? (
                                 <div className="text-center py-6 bg-slate-50 rounded-lg border border-dashed text-slate-400 text-sm">
                                     Your wishlist is empty.
                                 </div>

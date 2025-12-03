@@ -8,10 +8,8 @@ export default function GuidePage() {
     <div className="container mx-auto px-4 py-12 max-w-4xl">
       <div className="mb-8 flex items-center justify-between">
         <div>
-            <Link href="/">
-                <a className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4 transition-colors">
+            <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4 transition-colors">
                 <ArrowLeft className="w-4 h-4 mr-1" /> Back to Home
-                </a>
             </Link>
             <h1 className="text-4xl font-display font-bold text-slate-900 flex items-center gap-3">
                 <HelpCircle className="w-10 h-10 text-primary" /> User Guide

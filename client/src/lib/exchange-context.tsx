@@ -1,18 +1,15 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import canvasConfetti from 'canvas-confetti';
-
-// Simple ID generator since we might not have uuid/nanoid
-const generateId = () => Math.random().toString(36).substring(2, 9);
 
 export type Participant = {
   id: string;
+  exchangeId: string;
   name: string;
   email: string;
-  password?: string; // Added password field
-  suggestions: string; // New field for "suggestions and preferences"
-  avatar?: string;
-  wishlist: string[];
-  assignedToId?: string | null; // The ID of the person they are giving a gift TO
+  password: string;
+  suggestions: string | null;
+  wishlist: string[] | null;
+  assignedToId: string | null;
 };
 
 export type Exchange = {
@@ -20,193 +17,150 @@ export type Exchange = {
   title: string;
   date: string;
   budget: string;
+  status: string;
   participants: Participant[];
-  status: 'draft' | 'active' | 'completed';
 };
 
 interface ExchangeContextType {
   exchanges: Exchange[];
-  createExchange: (title: string, date: string, budget: string) => void;
+  loading: boolean;
+  refreshExchanges: () => Promise<void>;
+  createExchange: (title: string, date: string, budget: string) => Promise<void>;
   getExchange: (id: string) => Exchange | undefined;
-  addParticipant: (exchangeId: string, name: string, email: string, suggestions?: string, password?: string) => void;
-  removeParticipant: (exchangeId: string, participantId: string) => void;
-  drawNames: (exchangeId: string) => void;
-  resetDraw: (exchangeId: string) => void;
-  addToWishlist: (exchangeId: string, participantId: string, item: string) => void;
-  currentUser: Participant | null; // Mocking a "logged in" user for the view
+  addParticipant: (exchangeId: string, name: string, email: string, suggestions?: string, password?: string) => Promise<void>;
+  removeParticipant: (exchangeId: string, participantId: string) => Promise<void>;
+  drawNames: (exchangeId: string) => Promise<void>;
+  resetDraw: (exchangeId: string) => Promise<void>;
+  addToWishlist: (exchangeId: string, participantId: string, item: string) => Promise<void>;
+  currentUser: Participant | null;
   setCurrentUser: (participant: Participant | null) => void;
+  currentExchangeId: string | null;
+  setCurrentExchangeId: (id: string | null) => void;
 }
 
 const ExchangeContext = createContext<ExchangeContextType | undefined>(undefined);
 
-// Initial Mock Data
-const MOCK_EXCHANGES: Exchange[] = [
-  {
-    id: 'demo-1',
-    title: 'Fincred Holiday Exchange 2025',
-    date: '2025-12-20',
-    budget: 'K300',
-    status: 'draft',
-    participants: [
-      { 
-        id: 'p1', 
-        name: 'Sarah Jenkins', 
-        email: 'sarah@fincred.com', 
-        password: 'password123',
-        suggestions: 'Loves aromatic candles and dark chocolate. Dislikes strong perfumes.',
-        wishlist: ['Scented candles', 'Coffee mug'], 
-        assignedToId: null 
-      },
-      { 
-        id: 'p2', 
-        name: 'Mike Ross', 
-        email: 'mike@fincred.com', 
-        suggestions: 'Huge tech nerd. Always needs cables or desk organizers. No food items.',
-        wishlist: ['Tech gadgets', 'Socks'], 
-        assignedToId: null 
-      },
-      { 
-        id: 'p3', 
-        name: 'Jessica Pearson', 
-        email: 'jessica@fincred.com', 
-        suggestions: 'Appreciates high quality tea and stationery. Elegant style.',
-        wishlist: ['Luxury tea', 'Notebook'], 
-        assignedToId: null 
-      },
-    ]
-  }
-];
-
 export function ExchangeProvider({ children }: { children: ReactNode }) {
-  const [exchanges, setExchanges] = useState<Exchange[]>(MOCK_EXCHANGES);
+  const [exchanges, setExchanges] = useState<Exchange[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<Participant | null>(null);
+  const [currentExchangeId, setCurrentExchangeId] = useState<string | null>(null);
 
-  const createExchange = (title: string, date: string, budget: string) => {
-    const newExchange: Exchange = {
-      id: generateId(),
-      title,
-      date,
-      budget,
-      participants: [],
-      status: 'draft'
-    };
-    setExchanges([...exchanges, newExchange]);
+  const refreshExchanges = useCallback(async () => {
+    try {
+      const response = await fetch('/api/exchanges');
+      if (response.ok) {
+        const data = await response.json();
+        setExchanges(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch exchanges:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshExchanges();
+  }, [refreshExchanges]);
+
+  const createExchange = async (title: string, date: string, budget: string) => {
+    try {
+      const response = await fetch('/api/exchanges', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, date, budget, status: 'draft' })
+      });
+      if (response.ok) {
+        await refreshExchanges();
+      }
+    } catch (error) {
+      console.error('Failed to create exchange:', error);
+    }
   };
 
   const getExchange = (id: string) => exchanges.find(e => e.id === id);
 
-  const addParticipant = (exchangeId: string, name: string, email: string, suggestions: string = "", password: string = "fincred2025") => {
-    setExchanges(prev => prev.map(ex => {
-      if (ex.id !== exchangeId) return ex;
-      return {
-        ...ex,
-        participants: [...ex.participants, { 
-          id: generateId(), 
-          name, 
-          email, 
-          password,
-          suggestions,
-          wishlist: [],
-          assignedToId: null 
-        }]
-      };
-    }));
-  };
-
-  const removeParticipant = (exchangeId: string, participantId: string) => {
-    setExchanges(prev => prev.map(ex => {
-      if (ex.id !== exchangeId) return ex;
-      return {
-        ...ex,
-        participants: ex.participants.filter(p => p.id !== participantId)
-      };
-    }));
-  };
-
-  const resetDraw = (exchangeId: string) => {
-     setExchanges(prev => prev.map(ex => {
-      if (ex.id !== exchangeId) return ex;
-      return {
-        ...ex,
-        status: 'draft',
-        participants: ex.participants.map(p => ({...p, assignedToId: null}))
-      };
-    }));
-  }
-
-  const drawNames = (exchangeId: string) => {
-    setExchanges(prev => prev.map(ex => {
-      if (ex.id !== exchangeId) return ex;
-      
-      const participants = [...ex.participants];
-      if (participants.length < 2) return ex; // Need at least 2 people
-
-      // Simple shuffle and assign
-      let shuffled = [...participants];
-      let valid = false;
-      
-      // Keep shuffling until no one has themselves
-      // (In a real app, use a better graph algorithm, but this works for small N)
-      let attempts = 0;
-      while (!valid && attempts < 100) {
-        for (let i = shuffled.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        
-        valid = true;
-        for (let i = 0; i < participants.length; i++) {
-          if (participants[i].id === shuffled[i].id) {
-            valid = false;
-            break;
-          }
-        }
-        attempts++;
-      }
-
-      if (!valid) {
-          console.error("Could not find valid match in 100 attempts");
-          // Fallback: Shift by 1 (guaranteed no self-match)
-          shuffled = [...participants.slice(1), participants[0]];
-      }
-
-      const newParticipants = participants.map((p, i) => ({
-        ...p,
-        assignedToId: shuffled[i].id
-      }));
-
-      // Trigger confetti
-      canvasConfetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#1e3a8a', '#3b82f6', '#93c5fd'] // Blue confetti
+  const addParticipant = async (exchangeId: string, name: string, email: string, suggestions: string = "", password: string = "fincred2025") => {
+    try {
+      const response = await fetch(`/api/exchanges/${exchangeId}/participants`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, suggestions, password })
       });
-
-      return {
-        ...ex,
-        participants: newParticipants,
-        status: 'active'
-      };
-    }));
+      if (response.ok) {
+        await refreshExchanges();
+      }
+    } catch (error) {
+      console.error('Failed to add participant:', error);
+    }
   };
 
-  const addToWishlist = (exchangeId: string, participantId: string, item: string) => {
-    setExchanges(prev => prev.map(ex => {
-      if (ex.id !== exchangeId) return ex;
-      return {
-        ...ex,
-        participants: ex.participants.map(p => {
-          if (p.id !== participantId) return p;
-          return { ...p, wishlist: [...p.wishlist, item] };
-        })
-      };
-    }));
+  const removeParticipant = async (exchangeId: string, participantId: string) => {
+    try {
+      const response = await fetch(`/api/participants/${participantId}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        await refreshExchanges();
+      }
+    } catch (error) {
+      console.error('Failed to remove participant:', error);
+    }
+  };
+
+  const resetDraw = async (exchangeId: string) => {
+    try {
+      const response = await fetch(`/api/exchanges/${exchangeId}/reset`, {
+        method: 'POST'
+      });
+      if (response.ok) {
+        await refreshExchanges();
+      }
+    } catch (error) {
+      console.error('Failed to reset draw:', error);
+    }
+  };
+
+  const drawNames = async (exchangeId: string) => {
+    try {
+      const response = await fetch(`/api/exchanges/${exchangeId}/draw`, {
+        method: 'POST'
+      });
+      if (response.ok) {
+        await refreshExchanges();
+        canvasConfetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#1e3a8a', '#3b82f6', '#93c5fd']
+        });
+      }
+    } catch (error) {
+      console.error('Failed to draw names:', error);
+    }
+  };
+
+  const addToWishlist = async (exchangeId: string, participantId: string, item: string) => {
+    try {
+      const response = await fetch(`/api/participants/${participantId}/wishlist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ item })
+      });
+      if (response.ok) {
+        await refreshExchanges();
+      }
+    } catch (error) {
+      console.error('Failed to add to wishlist:', error);
+    }
   };
 
   return (
     <ExchangeContext.Provider value={{ 
       exchanges, 
+      loading,
+      refreshExchanges,
       createExchange, 
       getExchange, 
       addParticipant, 
@@ -215,7 +169,9 @@ export function ExchangeProvider({ children }: { children: ReactNode }) {
       resetDraw,
       addToWishlist,
       currentUser,
-      setCurrentUser
+      setCurrentUser,
+      currentExchangeId,
+      setCurrentExchangeId
     }}>
       {children}
     </ExchangeContext.Provider>

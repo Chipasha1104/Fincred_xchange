@@ -18,7 +18,7 @@ export default function ExchangeDetail() {
   const [activeTab, setActiveTab] = useState("participants");
 
   if (!exchange) {
-    return <div className="p-8 text-center">Exchange not found <Link href="/"><a className="text-primary underline">Go Home</a></Link></div>;
+    return <div className="p-8 text-center">Exchange not found <Link href="/" className="text-primary underline">Go Home</Link></div>;
   }
 
   const handleDraw = () => {
@@ -37,10 +37,8 @@ export default function ExchangeDetail() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <Link href="/admin">
-        <a className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Back to Admin
-        </a>
+      <Link href="/admin" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
+        <ArrowLeft className="w-4 h-4 mr-1" /> Back to Admin
       </Link>
 
       {/* Header Card - Corporate Style */}
@@ -209,7 +207,7 @@ export default function ExchangeDetail() {
                                         <CardTitle className="text-lg">Their Wishlist</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        {myMatch.wishlist.length > 0 ? (
+                                        {(myMatch.wishlist && myMatch.wishlist.length > 0) ? (
                                             <ul className="space-y-3">
                                                 {myMatch.wishlist.map((item, i) => (
                                                     <li key={i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border">
@@ -245,7 +243,7 @@ export default function ExchangeDetail() {
                                    </form>
                                    
                                    <div className="space-y-2">
-                                      {currentUser.wishlist.map((w, i) => (
+                                      {(currentUser.wishlist || []).map((w, i) => (
                                          <div key={i} className="flex items-center gap-2 text-sm p-2 bg-slate-50 rounded border">
                                             <Gift className="w-3 h-3 text-primary" /> {w}
                                          </div>

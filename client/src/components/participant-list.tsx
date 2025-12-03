@@ -109,7 +109,7 @@ export function ParticipantList({ exchangeId }: { exchangeId: string }) {
                    </div>
                )}
                
-               {p.wishlist.length > 0 && (
+               {(p.wishlist && p.wishlist.length > 0) && (
                  <span className="text-xs bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded-full flex items-center gap-1">
                    <Gift className="w-3 h-3" /> {p.wishlist.length} wishes
                  </span>
