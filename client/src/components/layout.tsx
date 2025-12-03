@@ -10,17 +10,13 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className="min-h-screen flex flex-col bg-background font-sans selection:bg-primary/20">
       <header className="sticky top-0 z-50 w-full border-b bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/60 shadow-sm">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/">
-            <a className="flex items-center gap-3 group">
-              <span className="font-display text-xl text-primary font-bold tracking-tight">FINCRED</span>
-            </a>
+          <Link href="/" className="flex items-center gap-3 group">
+            <span className="font-display text-xl text-primary font-bold tracking-tight">FINCRED</span>
           </Link>
           
           <nav className="flex gap-4 items-center">
-            <Link href="/guide">
-              <a className={`text-sm font-medium transition-colors flex items-center gap-1 ${location === '/guide' ? 'text-primary font-bold' : 'text-muted-foreground hover:text-primary'}`}>
-                <HelpCircle className="w-4 h-4" /> Help Guide
-              </a>
+            <Link href="/guide" className={`text-sm font-medium transition-colors flex items-center gap-1 ${location === '/guide' ? 'text-primary font-bold' : 'text-muted-foreground hover:text-primary'}`}>
+              <HelpCircle className="w-4 h-4" /> Help Guide
             </Link>
             {/* Admin link removed from general view - Admin should know to go to /admin or access via Home button */}
           </nav>

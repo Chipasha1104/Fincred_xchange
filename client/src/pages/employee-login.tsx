@@ -4,62 +4,56 @@ import { useExchange } from "@/lib/exchange-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ShieldCheck, ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import iconImage from "@assets/generated_images/fincred_finance_logo_icon.png";
 
 export default function EmployeeLogin() {
   const [, setLocation] = useLocation();
-  const { exchanges, setCurrentUser } = useExchange();
+  const { setCurrentUser, setCurrentExchangeId } = useExchange();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    // Find participant across all exchanges (assuming email is unique-ish for mockup)
-    let foundUser = null;
-    let foundExchangeId = null;
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
-    for (const ex of exchanges) {
-      const participant = ex.participants.find(p => p.email.toLowerCase() === email.toLowerCase());
-      if (participant) {
-        // Check password
-        if (participant.password && participant.password !== password) {
-             setError("Incorrect password.");
-             return;
-        }
-        // Fallback for old data or if we didn't set a password in mock data properly yet
-        if (!participant.password && password !== 'fincred2025') {
-             // Just a fallback check for safety in this mockup
-             // In real app, all users would have passwords
-        }
+      const data = await response.json();
 
-        foundUser = participant;
-        foundExchangeId = ex.id;
-        break;
+      if (!response.ok) {
+        setError(data.error || "Login failed");
+        return;
       }
-    }
 
-    if (foundUser && foundExchangeId) {
-      setCurrentUser(foundUser);
-      setLocation(`/portal/${foundExchangeId}`);
-    } else {
-      setError("Email not found in any active exchange.");
+      setCurrentUser(data.participant);
+      setCurrentExchangeId(data.exchangeId);
+      setLocation(`/portal/${data.exchangeId}`);
+    } catch (err) {
+      setError("Failed to connect. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
+    <div className="min-h-[80vh] flex items-center justify-center px-4" data-testid="page-employee-login">
       <Card className="w-full max-w-md border-none shadow-2xl">
         <CardHeader className="text-center space-y-4 pb-8">
           <div className="w-16 h-16 mx-auto relative">
-             <img src={iconImage} alt="Logo" className="w-full h-full object-contain" />
+             <img src={iconImage} alt="Logo" className="w-full h-full object-contain" data-testid="img-logo" />
           </div>
           <div>
-            <CardTitle className="text-2xl font-display font-bold text-primary">Employee Portal</CardTitle>
-            <CardDescription>Access your secure gift assignment</CardDescription>
+            <CardTitle className="text-2xl font-display font-bold text-primary" data-testid="text-title">Employee Portal</CardTitle>
+            <CardDescription data-testid="text-description">Access your secure gift assignment</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
@@ -73,6 +67,7 @@ export default function EmployeeLogin() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="h-11"
                 required
+                data-testid="input-email"
               />
             </div>
 
@@ -85,17 +80,27 @@ export default function EmployeeLogin() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-11"
                 required
+                data-testid="input-password"
               />
             </div>
             
             {error && (
-              <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+              <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-md" data-testid="text-error">
                 {error}
               </p>
             )}
 
-            <Button type="submit" className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-bold">
-              Access Portal <ArrowRight className="w-4 h-4 ml-2" />
+            <Button 
+              type="submit" 
+              className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-bold"
+              disabled={loading}
+              data-testid="button-login"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>Access Portal <ArrowRight className="w-4 h-4 ml-2" /></>
+              )}
             </Button>
             
           </form>
