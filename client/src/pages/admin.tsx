@@ -187,11 +187,15 @@ export default function AdminDashboard() {
                                     <RefreshCw className="w-4 h-4 mr-2" /> Reset Matches
                                 </Button>
                              )}
-                             <Link href={`/exchange/${exchange.id}`}>
-                                <Button variant="default" size="sm" className="bg-slate-900 text-white hover:bg-slate-800">
-                                    Manage Details <ArrowRight className="w-4 h-4 ml-2" />
-                                </Button>
-                             </Link>
+                             <Button 
+                                variant="default" 
+                                size="sm" 
+                                className="bg-slate-900 text-white hover:bg-slate-800"
+                                onClick={() => setLocation(`/exchange/${exchange.id}`)}
+                                data-testid={`button-manage-${exchange.id}`}
+                             >
+                                Manage Details <ArrowRight className="w-4 h-4 ml-2" />
+                             </Button>
                         </div>
                     </div>
                  </div>

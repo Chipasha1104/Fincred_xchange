@@ -6,7 +6,7 @@ export type Participant = {
   exchangeId: string;
   name: string;
   email: string;
-  password: string;
+  password?: string;
   suggestions: string | null;
   wishlist: string[] | null;
   assignedToId: string | null;
